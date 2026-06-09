@@ -81,21 +81,12 @@ export function createServerClient() {
  * Never expose this client to the browser.
  */
 export function createAdminClient() {
-  console.log(
-    "[SUPABASE ADMIN]",
-    process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(0, 20)
-  );
-
-  return createClient<Database>(
-    getSupabaseUrl(),
-    getServiceRoleKey(),
-    {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
-    }
-  );
+  return createClient<Database>(getSupabaseUrl(), getServiceRoleKey(), {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
 }
 
 // ---------------------------------------------------------------------------
