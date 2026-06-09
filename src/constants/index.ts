@@ -15,6 +15,7 @@ export const NAV_LINKS = [
   { href: "/skills", label: "Skills" },
   { href: "/projects", label: "Projects" },
   { href: "/contact", label: "Contact" },
+  { href: "/case-studies", label: "Case Studies" },
 ] as const;
 
 export const CONTACT_INFO: readonly ContactInfo[] = [

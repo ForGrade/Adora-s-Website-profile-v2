@@ -1,51 +1,60 @@
-import Image from "next/image";
-import { Button } from "@/components/common/Button";
-import { Card } from "@/components/common/Card";
-import { SectionHeader } from "@/components/common/SectionHeader";
+"use client";
+
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import { MetricPanel } from "@/components/ui/elite/MetricPanel";
+import { SectionLabel } from "@/components/ui/elite/SectionLabel";
+import { fadeUp } from "@/components/ui/elite/utils/animationPresets";
+import { usePortfolioData } from "@/features/portfolio/hooks/usePortfolioData";
 
 export function AboutSection() {
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const shouldReduceMotion = useReducedMotion();
+  const { projects, skillCategories } = usePortfolioData();
+
+  const techCount = skillCategories.reduce((sum, cat) => sum + cat.skills.length, 0);
+  const animationState = shouldReduceMotion ? "visible" : isInView ? "visible" : "hidden";
+
   return (
-    <section id="about" className="bg-surface px-4 py-16 sm:px-6">
+    <section id="about" ref={ref} className="bg-[var(--color-card)] px-4 py-16 sm:px-6 lg:py-20">
       <div className="mx-auto max-w-6xl">
-        <SectionHeader title="About Me" />
-        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-          <Card className="relative min-h-72 overflow-hidden bg-surface-soft">
-            <Image
-              src="/profile-pic.jpg"
-              alt="John Mark R. Adora profile photo"
-              fill
-              sizes="(min-width: 1024px) 360px, 100vw"
-              className="object-cover"
-            />
-          </Card>
-          <div className="space-y-5 text-base leading-8 text-muted">
-            <p>
-              I am John Mark R. Adora, a Bachelor of Science in Computer Science student who is
-              passionate about software development, problem solving, and continuous learning.
-            </p>
-            <p>
-              I enjoy building modern web applications, exploring new technologies, and creating
-              solutions that improve user experiences.
-            </p>
-            <p>
-              I am continuously expanding my knowledge in software engineering, databases, web
-              development, and modern development practices.
-            </p>
-            <div className="grid gap-4 pt-3 sm:grid-cols-2">
-              <Card className="bg-background">
-                <p className="text-3xl font-bold text-foreground">4 Years</p>
-                <p className="mt-2 text-sm text-muted">
-                  4 Years of Learning and Growth in Software engineering and Technology.
-                </p>
-              </Card>
-              <div className="flex items-center">
-                <Button href="/resume/RESUME-Adora-v3.docx" variant="secondary" download>
-                  Download Resume
-                </Button>
-              </div>
+        <SectionLabel>MISSION</SectionLabel>
+        <motion.div
+          variants={fadeUp}
+          initial={shouldReduceMotion ? false : "hidden"}
+          animate={animationState}
+        >
+          <h2 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight text-[var(--color-text)] sm:text-4xl">
+            Engineering systems that solve real-world problems.
+          </h2>
+          <div className="mt-10 grid gap-10 lg:grid-cols-2">
+            <div className="space-y-5 text-base leading-8 text-[var(--color-muted)]">
+              <p>
+                I am John Mark R. Adora, a Bachelor of Science in Computer Science student who is
+                passionate about software development, problem solving, and continuous learning.
+              </p>
+              <p>
+                I enjoy building modern web applications, exploring new technologies, and creating
+                solutions that improve user experiences.
+              </p>
+              <p>
+                My engineering philosophy centres on clean architecture, deliberate trade-offs, and
+                systems that remain maintainable as they scale. I am continuously expanding my
+                knowledge in software engineering, databases, web development, and modern
+                development practices.
+              </p>
             </div>
+            <MetricPanel
+              items={[
+                { label: "Years Learning", value: 4, unit: "yrs" },
+                { label: "Projects Built", value: projects.length },
+                { label: "Technologies", value: techCount },
+                { label: "Problem Domains", value: skillCategories.length },
+              ]}
+            />
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

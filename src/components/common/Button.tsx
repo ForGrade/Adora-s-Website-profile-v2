@@ -28,7 +28,7 @@ export type ButtonProps = LinkButtonProps | NativeButtonProps;
 
 function getButtonClasses(variant: ButtonVariant, className?: string): string {
   return cn(
-    "inline-flex min-h-11 items-center justify-center gap-2 rounded-md border px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60",
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-md border px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-dark-surface)] disabled:cursor-not-allowed disabled:opacity-60",
     variantClasses[variant],
     className,
   );

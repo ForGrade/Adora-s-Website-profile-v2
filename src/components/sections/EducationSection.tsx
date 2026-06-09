@@ -1,61 +1,104 @@
 "use client";
 
-import { Card } from "@/components/common/Card";
-import { SectionHeader } from "@/components/common/SectionHeader";
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import { SectionLabel } from "@/components/ui/elite/SectionLabel";
+import { SystemCard } from "@/components/ui/elite/SystemCard";
+import { fadeUp, lineGrow, staggerContainer } from "@/components/ui/elite/utils/animationPresets";
 import { usePortfolioData } from "@/features/portfolio/hooks/usePortfolioData";
+import { cn } from "@/lib/utils";
 
-export function EducationSection() {
-  const { timelineItems } = usePortfolioData();
+const categoryStyles: Record<string, { marker: string; badge: string }> = {
+  Education: {
+    marker: "bg-[var(--color-primary)]",
+    badge: "text-[var(--color-primary)] border-[var(--color-primary)]/30",
+  },
+  Achievements: {
+    marker: "bg-[var(--color-secondary)]",
+    badge: "text-[var(--color-secondary)] border-[var(--color-secondary)]/30",
+  },
+  Certificates: {
+    marker: "bg-[var(--color-accent)]",
+    badge: "text-[var(--color-accent)] border-[var(--color-accent)]/30",
+  },
+};
 
+function getCategoryStyle(category: string) {
   return (
-    <section className="bg-surface px-4 py-16 sm:px-6">
-      <div className="mx-auto max-w-4xl">
-        <SectionHeader title="Education, Achievements & Certificates" />
-        <div className="relative space-y-5 before:absolute before:left-4 before:top-0 before:h-full before:w-px before:bg-border sm:before:left-1/2">
-          {timelineItems.map((item, index) => (
-            <div
-              key={item.id}
-              className="relative grid gap-4 pl-12 sm:grid-cols-2 sm:pl-0"
-            >
-              <div
-                className={`hidden sm:block ${index % 2 === 0 ? "sm:pr-10" : "sm:col-start-2 sm:pl-10"}`}
-              >
-                <Card>
-                  <TimelineContent item={item} />
-                </Card>
-              </div>
-              <div className="absolute left-2 top-6 size-5 rounded-full border-4 border-surface bg-accent sm:left-1/2 sm:-ml-2.5" />
-              <div className="sm:hidden">
-                <Card>
-                  <TimelineContent item={item} />
-                </Card>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+    categoryStyles[category] ?? {
+      marker: "bg-[var(--color-muted)]",
+      badge: "text-[var(--color-muted)] border-[var(--color-border)]",
+    }
   );
 }
 
-interface TimelineContentProps {
-  readonly item: {
-    readonly category: string;
-    readonly title: string;
-    readonly subtitle?: string;
-    readonly description?: string;
-  };
-}
+export function EducationSection() {
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const shouldReduceMotion = useReducedMotion();
+  const { timelineItems } = usePortfolioData();
 
-function TimelineContent({ item }: TimelineContentProps) {
+  const animationState = shouldReduceMotion ? "visible" : isInView ? "visible" : "hidden";
+
   return (
-    <>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
-        {item.category}
-      </p>
-      <h3 className="mt-2 text-lg font-bold text-foreground">{item.title}</h3>
-      {item.subtitle ? <p className="mt-2 text-sm font-semibold text-muted">{item.subtitle}</p> : null}
-      {item.description ? <p className="mt-1 text-sm text-muted">{item.description}</p> : null}
-    </>
+    <section ref={ref} className="bg-[var(--color-card)] px-4 py-16 sm:px-6 lg:py-20">
+      <div className="mx-auto max-w-3xl">
+        <SectionLabel>INTEL TIMELINE</SectionLabel>
+        <h2 className="mt-3 text-3xl font-bold tracking-tight text-[var(--color-text)] sm:text-4xl">
+          Education, Achievements &amp; Certificates
+        </h2>
+
+        <div className="relative mt-10 pl-8">
+          <motion.div
+            className="absolute bottom-0 left-[11px] top-0 w-px origin-top bg-[var(--color-border)]"
+            variants={lineGrow}
+            initial={shouldReduceMotion ? false : "hidden"}
+            animate={animationState}
+            aria-hidden="true"
+          />
+
+          <motion.div
+            className="space-y-6"
+            variants={staggerContainer}
+            initial={shouldReduceMotion ? false : "hidden"}
+            animate={animationState}
+          >
+            {timelineItems.map((item) => {
+              const style = getCategoryStyle(item.category);
+              return (
+                <motion.div key={item.id} variants={fadeUp} className="relative">
+                  <span
+                    className={cn(
+                      "absolute -left-8 top-6 size-3 rounded-full border-2 border-[var(--color-card)]",
+                      style.marker,
+                    )}
+                    aria-hidden="true"
+                  />
+                  <SystemCard glowIntensity="low">
+                    <span
+                      className={cn(
+                        "inline-block rounded-sm border px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest",
+                        style.badge,
+                      )}
+                    >
+                      {item.category}
+                    </span>
+                    <h3 className="mt-3 text-lg font-bold text-[var(--color-text)]">{item.title}</h3>
+                    {item.subtitle ? (
+                      <p className="mt-2 text-sm font-semibold text-[var(--color-muted)]">
+                        {item.subtitle}
+                      </p>
+                    ) : null}
+                    {item.description ? (
+                      <p className="mt-1 text-sm text-[var(--color-muted)]">{item.description}</p>
+                    ) : null}
+                  </SystemCard>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </div>
+    </section>
   );
 }

@@ -13,14 +13,14 @@ export function PageTransition({ children }: PageTransitionProps) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="sync">
       <motion.div
         key={pathname}
         className="flex-1"
         initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
         animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
-        transition={{ duration: shouldReduceMotion ? 0 : 0.45, ease: "easeOut" }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.18, ease: "easeOut" }}
       >
         {children}
       </motion.div>

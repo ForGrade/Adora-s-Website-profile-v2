@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { contactService } from "@/features/portfolio/services/contact.service";
 import type { ContactFormData } from "@/types";
 
 const initialFormData: ContactFormData = {
@@ -11,11 +12,10 @@ const initialFormData: ContactFormData = {
 };
 
 /**
- * Manages contact form state and submission.
+ * Manages contact form state and client-side submission.
  *
- * Submissions are sent to POST /api/contact, which validates the payload
- * with Zod, sanitizes inputs, and persists to Supabase via the backend
- * service layer. No Supabase credentials or backend code are imported here.
+ * Validates input locally and opens the visitor's email client via mailto
+ * so messages can be sent without a backend or database.
  */
 export function useContactForm() {
   const [formData, setFormData] = useState<ContactFormData>(initialFormData);
@@ -31,33 +31,15 @@ export function useContactForm() {
     setStatusMessage("");
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const result = await contactService.submitContactForm(formData);
 
-      const json: unknown = await response.json();
+      setStatusMessage(result.message);
 
-      // The API always returns { success: boolean; data?: ...; error?: string }
-      if (
-        typeof json === "object" &&
-        json !== null &&
-        "success" in json
-      ) {
-        const envelope = json as { success: boolean; error?: string };
-
-        if (envelope.success) {
-          setStatusMessage("Your message has been sent. I'll get back to you soon.");
-          setFormData(initialFormData);
-        } else {
-          setStatusMessage(envelope.error ?? "Something went wrong. Please try again.");
-        }
-      } else {
-        setStatusMessage("Unexpected response from server. Please try again.");
+      if (result.ok) {
+        setFormData(initialFormData);
       }
     } catch {
-      setStatusMessage("Network error. Please check your connection and try again.");
+      setStatusMessage("Something went wrong. Please try again or email directly.");
     } finally {
       setIsSubmitting(false);
     }

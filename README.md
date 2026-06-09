@@ -1,6 +1,6 @@
 # Adora Portfolio
 
-Personal portfolio website built with Next.js, TypeScript, and Tailwind CSS. The codebase follows a feature-based architecture with clear separation between UI, hooks, services, and data.
+Personal portfolio website built with Next.js, TypeScript, and Tailwind CSS. The site is **fully frontend** — no backend, database, or environment variables required.
 
 ## Getting started
 
@@ -33,26 +33,45 @@ If it still fails, use either launcher (they call `npm.cmd` directly):
 | -------------- | ------------------------ |
 | `npm run dev`  | Start development server |
 | `npm run build`| Production build         |
-| `npm run start`| Run production server      |
+| `npm run start`| Run production server    |
 | `npm run lint` | Run ESLint               |
+| `npm run test` | Run Vitest tests         |
+
+## How it works (frontend-only)
+
+| Feature | How data is handled |
+| ------- | ------------------- |
+| Projects, skills, education | Static TypeScript files in `src/features/portfolio/data/` |
+| Contact form | Client-side validation → opens email app via `mailto:` |
+| Theme (light/dark/system) | Saved in `localStorage` |
+| Case studies | Static content in `src/app/case-studies/page.tsx` |
+
+### Updating content
+
+Edit these files — no server or database needed:
+
+- **Projects** — `src/features/portfolio/data/projects.ts`
+- **Skills** — `src/features/portfolio/data/skills.ts`
+- **Education / certs** — `src/features/portfolio/data/timeline.ts`
+- **Contact info** — `src/constants/index.ts`
+- **Site metadata / nav** — `src/constants/index.ts`
 
 ## Documentation
 
 | Document | Description |
 | -------- | ----------- |
-| [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md) | **Full project guide** — structure, rules, files, and workflows (download-friendly) |
-| [docs/ARCHITECTURE_RULES.md](docs/ARCHITECTURE_RULES.md) | Canonical coding standards and folder rules |
+| [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md) | Full project guide — structure, data flow, and workflows |
+| [docs/ARCHITECTURE_RULES.md](docs/ARCHITECTURE_RULES.md) | Coding standards and folder rules |
 
 ## Architecture
-
-Project structure and coding standards are documented in [docs/ARCHITECTURE_RULES.md](docs/ARCHITECTURE_RULES.md).
 
 Key directories under `src/`:
 
 - `app/` — Next.js App Router pages and layouts
 - `components/` — Shared UI (`common`, `layout`, `sections`, `ui`)
-- `features/` — Feature modules (`career-insights`, `portfolio`)
-- `services/`, `hooks/`, `data/`, `types/` — Business logic and data layers
+- `features/portfolio/` — Data, services, and hooks for portfolio content
+- `hooks/` — Shared hooks (e.g. theme)
+- `constants/` — Site metadata, nav links, contact info
 
 ## Tech stack
 
@@ -60,3 +79,4 @@ Key directories under `src/`:
 - React 19
 - TypeScript
 - Tailwind CSS 4
+- Framer Motion 12

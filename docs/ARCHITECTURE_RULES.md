@@ -208,7 +208,7 @@ This keeps each feature self-contained and easier to maintain.
 - Data-driven where possible
 - Easy to update
 - Components must remain reusable
-- Support future API integrations
+- Store content in static TypeScript or JSON files under `features/career-insights/data/`
 
 ## Portfolio Module
 
@@ -267,19 +267,19 @@ This keeps each feature self-contained and easier to maintain.
 
 ## Service Layer Rules
 
-**Location:** `services/`
+**Location:** `features/<feature>/services/`
 
 **Responsibilities:**
 
-- API requests
-- Database communication
-- Data transformations
+- Reading static data from TypeScript/JSON files
+- Client-side validation and transformations
+- Encapsulating feature logic (e.g. contact form submission via `mailto:`)
 
-Never place API calls directly inside UI components.
+Never place data-fetching or business logic directly inside UI components.
 
-**Bad:** `fetch(...)` inside a component.
+**Bad:** `fetch(...)` or inline data arrays inside a component.
 
-**Good:** `projectService.getProjects()`
+**Good:** `portfolioService.getProjects()`
 
 ## Hook Rules
 
@@ -341,15 +341,12 @@ This portfolio is expected to evolve over time.
 
 Future additions may include:
 
-- Blog system
-- Authentication
-- Admin dashboard
-- Analytics
-- AI-powered career recommendations
-- Resume generator
-- Portfolio CMS
+- Blog system (MDX or static data files)
+- Analytics (client-side only, e.g. Plausible)
+- AI-powered career recommendations (optional third-party API)
+- Resume generator (client-side)
 
-The architecture should support future expansion without requiring major restructuring.
+The architecture should support future expansion without requiring major restructuring. Prefer static data and client-side solutions over custom backends unless there is a clear need.
 
 ## Cursor Instructions
 

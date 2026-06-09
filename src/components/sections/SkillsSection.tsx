@@ -1,47 +1,54 @@
 "use client";
 
-import { useState } from "react";
-import { Card } from "@/components/common/Card";
-import { SectionHeader } from "@/components/common/SectionHeader";
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import { IntelPanel } from "@/components/ui/elite/IntelPanel";
+import { SectionLabel } from "@/components/ui/elite/SectionLabel";
+import { TechBadge } from "@/components/ui/elite/TechBadge";
+import { fadeUp, staggerContainer } from "@/components/ui/elite/utils/animationPresets";
 import { usePortfolioData } from "@/features/portfolio/hooks/usePortfolioData";
-import type { SkillCategoryId } from "@/types";
 
 export function SkillsSection() {
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const shouldReduceMotion = useReducedMotion();
   const { skillCategories } = usePortfolioData();
-  const [activeCategoryId, setActiveCategoryId] = useState<SkillCategoryId>(skillCategories[0].id);
-  const activeCategory =
-    skillCategories.find((category) => category.id === activeCategoryId) ?? skillCategories[0];
+
+  const animationState = shouldReduceMotion ? "visible" : isInView ? "visible" : "hidden";
 
   return (
-    <section id="skills" className="px-4 py-16 sm:px-6">
+    <section id="skills" ref={ref} className="px-4 py-16 sm:px-6 lg:py-20">
       <div className="mx-auto max-w-6xl">
-        <SectionHeader
-          title="Skills"
-          description="Technologies grouped by the way they support real software delivery."
-        />
-        <div className="mb-8 flex flex-wrap justify-center gap-2" role="tablist" aria-label="Skill categories">
+        <SectionLabel>CAPABILITY MATRIX</SectionLabel>
+        <h2 className="mt-3 text-3xl font-bold tracking-tight text-[var(--color-text)] sm:text-4xl">
+          Technology Matrix
+        </h2>
+        <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--color-muted)]">
+          Technologies grouped by the way they support real software delivery — all categories
+          visible simultaneously.
+        </p>
+        <motion.div
+          className="mt-10 grid gap-6 sm:grid-cols-2"
+          variants={staggerContainer}
+          initial={shouldReduceMotion ? false : "hidden"}
+          animate={animationState}
+        >
           {skillCategories.map((category) => (
-            <button
-              key={category.id}
-              type="button"
-              role="tab"
-              aria-selected={category.id === activeCategoryId}
-              onClick={() => setActiveCategoryId(category.id)}
-              className="rounded-md border border-border px-4 py-2 text-sm font-semibold transition hover:border-accent data-[active=true]:border-accent data-[active=true]:bg-accent data-[active=true]:text-background"
-              data-active={category.id === activeCategoryId}
-            >
-              {category.label}
-            </button>
+            <motion.div key={category.id} variants={fadeUp}>
+              <IntelPanel title={category.label}>
+                <div className="flex flex-wrap gap-2">
+                  {category.skills.map((skill) => (
+                    <TechBadge
+                      key={skill.id}
+                      name={skill.name}
+                      className="transition hover:border-[var(--color-primary)] hover:shadow-[0_0_12px_rgba(0,229,255,0.2)]"
+                    />
+                  ))}
+                </div>
+              </IntelPanel>
+            </motion.div>
           ))}
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {activeCategory.skills.map((skill) => (
-            <Card key={skill.id} className="animate-slide-up">
-              <p className="text-lg font-bold text-foreground">{skill.name}</p>
-              <p className="mt-2 text-sm text-muted">{activeCategory.label}</p>
-            </Card>
-          ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

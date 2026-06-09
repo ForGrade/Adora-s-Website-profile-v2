@@ -1,4 +1,8 @@
+import { CONTACT_INFO } from "@/constants";
 import type { ContactFormData, ContactSubmissionResult } from "@/types";
+
+const RECIPIENT_EMAIL =
+  CONTACT_INFO.find((item) => item.label === "Email")?.href?.replace(/^mailto:/i, "") ?? "";
 
 export class ContactService {
   async submitContactForm(data: ContactFormData): Promise<ContactSubmissionResult> {
@@ -11,9 +15,24 @@ export class ContactService {
       };
     }
 
+    if (!RECIPIENT_EMAIL) {
+      return {
+        ok: false,
+        message: "Contact email is not configured. Please use the email link above instead.",
+      };
+    }
+
+    const body = [`Name: ${data.name.trim()}`, `Reply-To: ${data.email.trim()}`, "", data.message.trim()].join(
+      "\n",
+    );
+
+    const mailtoUrl = `mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(data.subject.trim())}&body=${encodeURIComponent(body)}`;
+
+    window.location.assign(mailtoUrl);
+
     return {
       ok: true,
-      message: "Message prepared locally. Backend integration can be connected here later.",
+      message: "Your email app is opening with your message ready to send.",
     };
   }
 
@@ -22,7 +41,7 @@ export class ContactService {
       return "Please complete all fields before submitting.";
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim())) {
       return "Please enter a valid email address.";
     }
 
