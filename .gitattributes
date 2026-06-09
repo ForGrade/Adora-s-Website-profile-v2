@@ -1,0 +1,18 @@
+# Normalize all text files to LF in the repository.
+# Git will convert to CRLF on checkout on Windows (autocrlf handles this),
+# but the repo always stores LF — keeping diffs clean.
+* text=auto eol=lf
+
+# Explicitly mark binary files so Git never mangles them.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.eot  binary
+*.docx binary
+*.pdf  binary
+*.zip  binary
